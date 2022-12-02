@@ -1,0 +1,8 @@
+php .\cmd.php add divice host1 server 192.168.2.1 52:54:00:e7:dd:dc 200gb
+
+
+php .\cmd.php search  host5 
+
+php .\cmd.php add link host5 host1
+
+php .\cmd.php show interfaces  host1
