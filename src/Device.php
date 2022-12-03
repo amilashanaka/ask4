@@ -1,8 +1,14 @@
 <?php
 
+namespace Ask4\Device;
 
-class Device
-{
+include_once ('DeviceClient.php');
+
+use Ask4\Network\DeviceClient;
+
+
+class Device implements DeviceClient{
+
     public $hostname;
     public $mac_address;
     public $ipv4_address;
@@ -12,16 +18,13 @@ class Device
     public $memory;
 
     public $db;
-    // public function __construct($name ,$mac_address ,$ipv4_address ,$db)
-    // {
-    //     $this->db = $db;
-    //     $this->hostname = $name;
-    //     $this->mac_address = $mac_address;
-    //     $this->ipv4_address = $ipv4_address;
 
-    //     $this->register($this->hostname, $this->mac_address, $this->ipv4_address);
-    // }
+	public function sendCommand(string $ip, string $command): string{
 
+       return "device send command";
+    }
+
+    
 
     public function __construct(){
 
@@ -50,7 +53,7 @@ class Device
 
     }
 
-    public function get_id_by_name($name){
+    public function find_device($name){
 
         $name = "select * from devices WHERE hostname='$name'";
        $this->db->query($name);
@@ -66,12 +69,23 @@ class Device
 
     public function get_device_id($name){
 
-       $name = "select * from devices WHERE hostname='$name'";
+       $name = "select id from devices WHERE hostname='$name'";
        $this->db->query($name);
 
         $result = $this->db->single();
 
        return    $result->id;
+
+    }
+
+    public function get_device_name($id){
+
+        $name = "select hostname from devices WHERE id='$id'";
+        $this->db->query($name);
+ 
+        $result = $this->db->single();
+
+        return $result->hostname;
 
     }
 
@@ -99,5 +113,5 @@ class Device
         print "ipv4 :$this->ipv4_address \n";
 
     }
-  
+
 }
