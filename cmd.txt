@@ -1,6 +1,6 @@
 // add new device
 
-php .\cmd.php add divice host3 server 44.168.2.1 52:54:00:e7:dd:dc 500gb
+php .\cmd.php add divice host3 server  500gb 1
 
 // search for devices in the database
 
@@ -15,6 +15,10 @@ php .\cmd.php add link host1 host3
 //Given a device, list what other devices it is directly connected to.
 
 php .\cmd.php show links host1
+
+// add network interface (ip /mac)
+
+php .\cmd.php add interface  host1  mac 44.168.2.1 52:54:00:e7:dd:dc 
 
 // display network interface (ip /mac)
 

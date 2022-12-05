@@ -3,10 +3,17 @@ namespace Ask4\Network;
 
 include_once ('DeviceClient.php');
 
+include_once ('Database.php');
+
+use Ask4\Database;
+
+
 use Ask4\Network\DeviceClient;
 
-class SSHClient implements DeviceClient
+class SSHClient extends Database  implements DeviceClient 
 {
+
+	protected $ip, $cmd, $respnce;
 
 
 	/**

@@ -1,18 +1,18 @@
 <?php
 
-require_once 'src/Database.php';
+
 require_once 'src/Device.php';
 require_once 'src/Link.php';
+require_once 'src/NetworkInterface.php';
+
 
 use Ask4\Device\Device;
 use Ask4\Network\Link;
+use Ask4\Network\NetworkInterface;
 
-$db = new Database();
 $device = new Device();
 $link = new Link();
-
-$device->db = $db;
-$link->db = $db;
+$interface = new NetworkInterface();
 
 
 if( $argv[1]=='add'){
@@ -35,41 +35,37 @@ if( $argv[1]=='add'){
             $device_type = $argv[4];
         }
 
-        if( $argv[5]==''){
-            print "please enter ipv4 address";
-            exit();
-        }else{
 
-            $ipv4= $argv[5];
-        }
+            if( $argv[5]==''){
 
-        if( $argv[6]==''){
-
-        print "please enter mac address";
-        exit();
-        }else{
-
-            $mac= $argv[6];
-        }
-
-        if( $argv[4]=='server'){
-
-            if( $argv[7]==''){
-
-            print "please enter RAM Size";
+            print "please enter Memory Size";
             exit();
 
             }else{
-            $ram = $argv[7];
+            $memory = $argv[5];
             }
-        }
+    
+            if( $argv[6]==''){
+
+            print "please enter status 1/0 Active or deactive";
+                exit();
+            }else{
+
+                $status = $argv[6];
+            }
 
 
-
-        $device->register($host_name,$device_type,$ipv4,$mac,$ram);
-
+       if( $device->register($host_name,$device_type,$memory,$status)){
         print "Device sucessfully registered ................\n";
         $device->print_device();
+
+       }else{
+
+        print "Device failed to register";
+        exit();
+       }
+
+  
 
 
     }
@@ -96,15 +92,75 @@ if( $argv[1]=='add'){
 
 
         $div_id_1 = $device->get_device_id($device1);
-        $div_id_2= $device->get_device_id($device2);
-        $link->add_new_link($div_id_1, $div_id_2);
+        if($div_id_1>0){
+           
+            $div_id_2= $device->get_device_id($device2);
 
-        if($link->db->rowCount()>0){
+            if ($div_id_2 > 0) {
+
+                $link->add_new_link($div_id_1, $div_id_2);
+            }else{
+
+                print "Device 2 not found";
+                exit();
+            }
+
+        }else{
+            print "Device 1 not found";
+            exit();
+        }
+        
+
+
+        if($link->rowCount()>0){
             print "new link created";
             $link->print();
         }
 
 
+
+    }
+
+    if($argv[2]=='interface'){
+
+        if($argv[3]==''){
+            print "please enter device id";
+            exit();
+        }else{
+
+            $host_name = $argv[3];
+
+            if($argv[4]==''){
+                print "please enter interface type ";
+                exit();
+            }else{
+
+                $interface_type= $argv[4];
+                if($argv[5]==''){
+                    print "please enter value for interface ";
+                    exit();
+                }else{
+
+                    $value= $argv[5];
+
+                    $device_id=$device->get_device_id($host_name );
+
+                    if($device_id>0){
+                        $interface->add_new_interface($device_id, $interface_type, $value);
+
+                    }else{
+
+                        print "Devic not found please enter valid device name ";
+
+                        exit();
+                    }
+
+                  
+
+
+                }
+            }
+        }
 
     }
 
@@ -117,8 +173,14 @@ if( $argv[1]=='add'){
         exit();
     }else{
     $host_name = $argv[2];
-    $device->find_device($host_name);
-    $device->print_device();
+       if( $device->find_device( $host_name )){
+        $device->print_device();
+
+       }else{
+            print "Device not found";
+            exit();
+       }
+ 
 
 
     }
@@ -134,15 +196,25 @@ if( $argv[1]=='add'){
         exit();
     }
 
-    if( $argv[2]=="interface"){
+    if( $argv[2]=="interfaces"){
 
         if( $argv[3]==''){
             print "Please enter host name";
             exit();
         }else{
          $host_name=$argv[3];
-         $device->find_device($host_name);
-         $device->print_device();
+
+         $device_id =$device->get_device_id($host_name);
+         
+         $result=$interface->get_interfaces($device_id);
+
+      
+
+         foreach($result as $int){
+
+
+                print "Interface in $host_name : inerface type $int->i_type with value : $int->i_value \n ";
+         }
  
 
         }

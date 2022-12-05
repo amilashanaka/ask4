@@ -2,13 +2,14 @@
 namespace Ask4\Network;
 
 include_once ('DeviceClient.php');
+include_once ('Database.php');
+
+use Ask4\Database;
 
 use Ask4\Network\DeviceClient;
 
-class TelnetClient implements DeviceClient{
+class TelnetClient extends Database implements DeviceClient{
 
-
-    
 
     /**
      */

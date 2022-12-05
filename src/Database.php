@@ -1,31 +1,61 @@
 <?php
 
+namespace Ask4;
+
+use PDO;
+
 class Database
 {
 
+    protected static $host, $user, $pass, $db;
+    public $pdo;
+    protected $stmt;
 
-    private static $dsn, $db, $un, $pw;
-
-    protected $link;
-    private $stmt;
 
     public function __construct()
     {
-        self::$dsn = "localhost";
+        self::$host = "localhost";
+        self::$user = "root";
+        self::$pass = "";
         self::$db = "networks";
-        self::$un = "root";
-        self::$pw = "";
         $this->connect();
     }
+
+
+    public function __destruct()
+    {
+        if ($this->stmt !== null) {
+
+            $this->stmt = null;
+
+        }
+
+        if ($this->pdo !== null) {
+
+            $this->pdo = null;
+
+        }
+    }
+
     private function connect()
     {
-        $conn = 'mysql:host=' . self::$dsn . ';dbname=' . self::$db;
+        $dsn = 'mysql:host=' . self::$host . ';dbname=' . self::$db;
+
         $options = array(
             PDO::ATTR_PERSISTENT => true,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
         );
 
-        $this->link = new PDO($conn, self::$un, self::$pw, $options);
+
+        try {
+
+            $this->pdo = new PDO($dsn, self::$user, self::$pass, $options);
+
+        } catch (\PDOException $e) {
+
+            die("Error connecting database: " . $e->getMessage());
+        }
+        return $this->pdo;
 
     }
 
@@ -43,14 +73,22 @@ class Database
     public function conn()
     {
 
-        return $this->link;
+        return $this->pdo;
     }
 
     // Prepare statement with query
     public function query($sql)
     {
-        $this->stmt = $this->link->prepare($sql);
-        $this->stmt->execute();
+        $this->stmt = $this->pdo->prepare($sql);
+       
+    }
+
+        
+    public function run_query($sql){
+    
+       $this->query($sql);
+       return  $this->execute();
+
     }
 
     // Bind values
@@ -88,8 +126,24 @@ class Database
     // Get result set as array of objects
     public function resultSet()
     {
-       
+
         return $this->stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function get_result($sql){
+    
+        $this->stmt = $this->pdo->prepare($sql);
+        $this->stmt->execute();
+        return $this->stmt->fetch(PDO::FETCH_OBJ);
+
+    }
+
+    public function get_all_results($sql){
+    
+        $this->stmt = $this->pdo->prepare($sql);
+        $this->stmt->execute();
+        return $this->stmt->fetchAll(PDO::FETCH_OBJ);
+
     }
 
     // Get single record as object

@@ -1,34 +1,29 @@
 <?php
 
 namespace Ask4\Network;
+include_once ('Database.php');
 
-class Link{
+use Ask4\Database;
 
-    public $db;
+class Link extends Database{
+
     public $dev_1;
 
     public $dev_2;
 
 
 
-    public function __construct(){
-
-
-    }
-
     public function add_new_link($dev1,$dev2){
 
         $sql = "INSERT INTO `link` ( `dev1`, `dev2`) VALUES  ( '$dev1', '$dev2');";
-        $this->db->query($sql);
+        $this->run_query($sql);
  
     }
 
     public function find_link_devices($host_id){
 
         $q_links = "SELECT `dev2` FROM `link` WHERE `dev1`= '$host_id'";
-
-        $this->db->query($q_links);
-        $result = $this->db->resultSet();
+        $result = $this->get_all_results($q_links);
         return    $result;
         
 
